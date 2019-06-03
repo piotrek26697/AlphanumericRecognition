@@ -1,5 +1,5 @@
 plugins {
-    //id 'java'
+    id 'java-library'
     id 'org.openjfx.javafxplugin' version '0.0.7'
     id 'application'
 }
@@ -15,18 +15,23 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'org.encog:encog-core:3.4'
+    implementation 'org.encog:encog-core:3.4'
 }
 
 javafx {
     version = "12.0.1"
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'Main'
+        attributes 'Main-Class': 'model.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
-mainClassName = 'Main'
+application {
+    mainClassName 'model.Main'
+}

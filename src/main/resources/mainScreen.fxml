@@ -8,7 +8,7 @@
             xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controllers.MainScreenController">
     <children>
-        <Canvas fx:id="canvas" height="28.0" layoutX="215.0" layoutY="202.0" scaleX="8.0" scaleY="8.0" width="28.0"/>
+        <Canvas fx:id="canvas" height="200.0" layoutX="129.0" layoutY="97.0" width="200.0"/>
         <Button fx:id="buttonClearCanvas" layoutX="188.0" layoutY="355.0" mnemonicParsing="false" text="Clear canvas"/>
         <Button fx:id="buttonTest" layoutX="448.0" layoutY="380.0" mnemonicParsing="false" text="Button"/>
     </children>

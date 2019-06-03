@@ -5,15 +5,24 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import model.ImageHandler;
 
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainScreenController implements Initializable
 {
+    static public final int CANVAS_HEIGHT = 200;
+
+    public final static int CANVAS_WIDTH = 200;
+
+    static public final int CANVAS_HEIGHT_SCALED = 28;
+
+    public final static int CANVAS_WIDTH_SCALED = 28;
+
     @FXML
     private Canvas canvas;
 
@@ -23,12 +32,10 @@ public class MainScreenController implements Initializable
     @FXML
     private Button buttonTest;
 
-    private GraphicsContext gc;
-
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        gc = canvas.getGraphicsContext2D();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
         clearCanvas();
 
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
@@ -54,7 +61,7 @@ public class MainScreenController implements Initializable
 
     private void clearCanvas()
     {
-        gc = canvas.getGraphicsContext2D();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
@@ -62,8 +69,9 @@ public class MainScreenController implements Initializable
 
     private void getPixels()
     {
-        WritableImage snap = gc.getCanvas().snapshot(null, null);
-        int color = snap.getPixelReader().getArgb(3, 3);
-        color = color & 0xffffff;
+        ImageHandler imageHandler = new ImageHandler();
+        BufferedImage scaledImage = imageHandler.getScaledImageFromCanvas(canvas);
+        //TODO scaledImage. PixelReader()
+        //scaledImage.getRgb()
     }
 }
