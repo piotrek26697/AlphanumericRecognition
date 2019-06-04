@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import model.ImageHandler;
 import model.LearningDataReader;
 import model.NeuralNetManager;
+import org.encog.ml.data.MLDataSet;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -99,39 +100,34 @@ public class MainScreenController implements Initializable
         return Arrays.asList(pixels);
     }
 
-    private void train() //TODO make it better
+    private void train()
     {
         String source = "src/main/resources/learningData.csv";
-        neuralNetManager.setError(0.1);
+        neuralNetManager.setError(0.025);
         LearningDataReader learner = new LearningDataReader();
-        learner.getDataFromCSV(source, neuralNetManager);
+        List<List<Integer>> list = learner.getDataFromCSV(source, neuralNetManager);
+        MLDataSet trainingSet = neuralNetManager.prepareDataSet(list);
+        neuralNetManager.trainNeuralNetwork(trainingSet);
         System.out.println("Learning finished");
     }
 
     private void recognizeLetter()
     {
         List<Integer> pixels = getPixels();
-
-
-        int k = 0;
-        for (int i = 0; i < 28; i++)
-        {
-            for (int j = 0; j < 28; j++)
-            {
-                System.out.print(pixels.get(k) + "\t");
-                k++;
-            }
-            System.out.println();
-        }
-
-
         double[] result = neuralNetManager.recognizeLetter(pixels);
         char letter = 'A';
+        double max = 0;
+        char maxLetter = letter;
         for (int i = 0; i < 26; i++)
         {
             System.out.print(letter + ": " + result[i] + "\t");
+            if (result[i] > max)
+            {
+                max = result[i];
+                maxLetter = letter;
+            }
             letter++;
         }
-        System.out.println();
+        System.out.println("\n\nHighest letter: " + maxLetter);
     }
 }

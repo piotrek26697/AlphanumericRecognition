@@ -9,7 +9,7 @@ import org.encog.ml.train.MLTrain;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
-import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import org.encog.util.arrayutil.NormalizeArray;
 
 import java.util.List;
 
@@ -29,11 +29,9 @@ public class NeuralNetManager
 
     private final int outputNeuronCount;
 
-    public final static int CHUNK = 500;
-
     public NeuralNetManager()
     {
-        hiddenLayersCount = 2;
+        hiddenLayersCount = 3;
         hiddenNeuronCount = 32;
         inputNeuronCount = MainScreenController.CANVAS_HEIGHT_SCALED * MainScreenController.CANVAS_WIDTH_SCALED;
         outputNeuronCount = 26;
@@ -41,36 +39,46 @@ public class NeuralNetManager
         ActivationFunction activationFunction = new ActivationSigmoid();
 
         network = new BasicNetwork();
-        network.addLayer(new BasicLayer(null, false, inputNeuronCount));
+        network.addLayer(new BasicLayer(null, true, inputNeuronCount));
         for (int i = 0; i < hiddenLayersCount; i++)
-            network.addLayer(new BasicLayer(activationFunction, false, hiddenNeuronCount));
+            network.addLayer(new BasicLayer(activationFunction, true, hiddenNeuronCount));
 
         network.addLayer(new BasicLayer(activationFunction, false, outputNeuronCount));
         network.getStructure().finalizeStructure();
         network.reset();
     }
 
-    public void prepareDataSet(List<List<Integer>> list)
+    private double[] normalize(double[] tab)
     {
-        double[][] input = new double[CHUNK][inputNeuronCount];
-        double[][] idealOutput = new double[CHUNK][outputNeuronCount];
+        NormalizeArray norm = new NormalizeArray();
+        norm.setNormalizedLow(0);
+        norm.setNormalizedHigh(1);
+
+        return norm.process(tab);
+    }
+
+    public MLDataSet prepareDataSet(List<List<Integer>> list)
+    {
+        double[][] input = new double[list.size()][inputNeuronCount];
+        double[][] idealOutput = new double[list.size()][outputNeuronCount];
 
         int iterator = 0;
         for (List<Integer> integers : list)
         {
-            input[iterator] = integers.subList(1, integers.size()).stream()
+            input[iterator] = normalize(integers.subList(1, integers.size()).stream()
                     .mapToDouble(i -> i)
-                    .toArray();
+                    .toArray());
             for (int i = 0; i < outputNeuronCount; i++)
                 idealOutput[iterator][i] = 0.0;
             idealOutput[iterator][integers.get(0)] = 1.0;
+
             iterator++;
 
         }
-        trainNeuralNetwork(new BasicMLDataSet(input, idealOutput));
+        return new BasicMLDataSet(input, idealOutput);
     }
 
-    private void trainNeuralNetwork(MLDataSet trainingSet)
+    public void trainNeuralNetwork(MLDataSet trainingSet)
     {
         MLTrain trainer = new Backpropagation(network, trainingSet);
 
@@ -86,7 +94,7 @@ public class NeuralNetManager
     public double[] recognizeLetter(List<Integer> pixels)
     {
         double[] result = new double[outputNeuronCount];
-        double[] pixelArray = pixels.stream().mapToDouble(i -> i).toArray();
+        double[] pixelArray = normalize(pixels.stream().mapToDouble(i -> i).toArray());
 
         network.compute(pixelArray, result);
 
