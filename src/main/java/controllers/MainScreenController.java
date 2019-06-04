@@ -8,8 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import model.ImageHandler;
+import model.LearningDataReader;
 import model.NeuralNetManager;
-import org.encog.ml.data.MLDataSet;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -66,6 +66,8 @@ public class MainScreenController implements Initializable
         buttonClearCanvas.setOnAction(event -> clearCanvas());
 
         buttonLearn.setOnAction(event -> train());
+
+        buttonRecognize.setOnAction(event -> recognizeLetter());
     }
 
     private void clearCanvas()
@@ -100,7 +102,36 @@ public class MainScreenController implements Initializable
     private void train() //TODO make it better
     {
         String source = "src/main/resources/learningData.csv";
-        MLDataSet trainingSet = neuralNetManager.prepareDataSet(source);
-        neuralNetManager.trainNeuralNetwork(trainingSet);
+        neuralNetManager.setError(0.1);
+        LearningDataReader learner = new LearningDataReader();
+        learner.getDataFromCSV(source, neuralNetManager);
+        System.out.println("Learning finished");
+    }
+
+    private void recognizeLetter()
+    {
+        List<Integer> pixels = getPixels();
+
+
+        int k = 0;
+        for (int i = 0; i < 28; i++)
+        {
+            for (int j = 0; j < 28; j++)
+            {
+                System.out.print(pixels.get(k) + "\t");
+                k++;
+            }
+            System.out.println();
+        }
+
+
+        double[] result = neuralNetManager.recognizeLetter(pixels);
+        char letter = 'A';
+        for (int i = 0; i < 26; i++)
+        {
+            System.out.print(letter + ": " + result[i] + "\t");
+            letter++;
+        }
+        System.out.println();
     }
 }
