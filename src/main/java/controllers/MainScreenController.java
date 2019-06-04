@@ -8,16 +8,20 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import model.ImageHandler;
+import model.NeuralNetManager;
+import org.encog.ml.data.MLDataSet;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainScreenController implements Initializable
 {
-    static public final int CANVAS_HEIGHT = 200;
+    static public final int CANVAS_HEIGHT = 150;
 
-    public final static int CANVAS_WIDTH = 200;
+    public final static int CANVAS_WIDTH = 150;
 
     static public final int CANVAS_HEIGHT_SCALED = 28;
 
@@ -30,7 +34,12 @@ public class MainScreenController implements Initializable
     private Button buttonClearCanvas;
 
     @FXML
-    private Button buttonTest;
+    private Button buttonLearn;
+
+    @FXML
+    private Button buttonRecognize;
+
+    private NeuralNetManager neuralNetManager = new NeuralNetManager();
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -39,16 +48,16 @@ public class MainScreenController implements Initializable
         clearCanvas();
 
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            gc.setFill(Color.BLACK);
             gc.beginPath();
-            gc.setLineWidth(0.3);
+            gc.setLineWidth(3);
+            gc.setStroke(Color.WHITE);
             gc.moveTo(event.getX(), event.getY());
             gc.stroke();
         });
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            gc.setFill(Color.BLACK);
             gc.lineTo(event.getX(), event.getY());
-            gc.setLineWidth(0.3);
+            gc.setLineWidth(3);
+            gc.setStroke(Color.WHITE);
             gc.stroke();
         });
         canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
@@ -56,22 +65,42 @@ public class MainScreenController implements Initializable
 
         buttonClearCanvas.setOnAction(event -> clearCanvas());
 
-        buttonTest.setOnAction(event -> getPixels());
+        buttonLearn.setOnAction(event -> train());
     }
 
     private void clearCanvas()
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
     }
 
-    private void getPixels()
+    private List<Integer> getPixels()
     {
         ImageHandler imageHandler = new ImageHandler();
         BufferedImage scaledImage = imageHandler.getScaledImageFromCanvas(canvas);
-        //TODO scaledImage. PixelReader()
-        //scaledImage.getRgb()
+        Integer[] pixels = new Integer[CANVAS_WIDTH_SCALED * CANVAS_HEIGHT_SCALED];
+        int iterator = 0;
+        for (int y = 0; y < CANVAS_HEIGHT_SCALED; y++)
+        {
+            for (int x = 0; x < CANVAS_WIDTH_SCALED; x++)
+            {
+                int rgb = scaledImage.getRGB(x, y) & 0xffffff;
+                int red = (rgb >> 16) & 0xff;
+                int green = (rgb >> 8) & 0xff;
+                int blue = rgb & 0xff;
+                pixels[iterator] = ((red + green + blue) / 3);
+                iterator++;
+            }
+        }
+        return Arrays.asList(pixels);
+    }
+
+    private void train() //TODO make it better
+    {
+        String source = "src/main/resources/learningData.csv";
+        MLDataSet trainingSet = neuralNetManager.prepareDataSet(source);
+        neuralNetManager.trainNeuralNetwork(trainingSet);
     }
 }
