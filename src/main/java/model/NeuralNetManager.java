@@ -18,8 +18,6 @@ public class NeuralNetManager
 {
     private BasicNetwork network;
 
-    private MLTrain trainer;
-
     private double error = 0.01;
 
     private final int hiddenLayersCount;
