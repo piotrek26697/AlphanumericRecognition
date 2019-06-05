@@ -3,6 +3,7 @@ package model;
 import controllers.MainScreenController;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.engine.network.activation.ActivationTANH;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.ml.train.MLTrain;
@@ -36,7 +37,7 @@ public class NeuralNetManager
         inputNeuronCount = MainScreenController.CANVAS_HEIGHT_SCALED * MainScreenController.CANVAS_WIDTH_SCALED;
         outputNeuronCount = 26;
 
-        ActivationFunction activationFunction = new ActivationSigmoid();
+        ActivationFunction activationFunction = new ActivationTANH();
 
         network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputNeuronCount));
@@ -51,7 +52,7 @@ public class NeuralNetManager
     private double[] normalize(double[] tab)
     {
         NormalizeArray norm = new NormalizeArray();
-        norm.setNormalizedLow(0);
+        norm.setNormalizedLow(-1);
         norm.setNormalizedHigh(1);
 
         return norm.process(tab);
