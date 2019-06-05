@@ -70,7 +70,7 @@ public class NeuralNetManager
                     .mapToDouble(i -> i)
                     .toArray());
             for (int i = 0; i < outputNeuronCount; i++)
-                idealOutput[iterator][i] = 0.0;
+                idealOutput[iterator][i] = -1.0;
             idealOutput[iterator][integers.get(0)] = 1.0;
 
             iterator++;
