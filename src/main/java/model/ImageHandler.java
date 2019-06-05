@@ -17,7 +17,7 @@ public class ImageHandler
         Image tmp = SwingFXUtils.fromFXImage(writableImage, null)
                 .getScaledInstance(MainScreenController.CANVAS_WIDTH_SCALED,
                         MainScreenController.CANVAS_HEIGHT_SCALED, Image.SCALE_SMOOTH);
-        BufferedImage scaledImg = new BufferedImage(28, 28, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage scaledImg = new BufferedImage(MainScreenController.CANVAS_WIDTH_SCALED, MainScreenController.CANVAS_HEIGHT_SCALED, BufferedImage.TYPE_BYTE_GRAY);
         Graphics graphics = scaledImg.getGraphics();
         graphics.drawImage(tmp, 0, 0, null);
         graphics.dispose();
