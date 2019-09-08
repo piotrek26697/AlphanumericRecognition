@@ -24,4 +24,20 @@ public class Main extends Application
     {
         launch(args);
     }
+
+    static public class Constants {
+        public static final int TRAINING_DATA_SIZE = 28;
+
+        static public final int CANVAS_HEIGHT = 150;
+
+        public final static int CANVAS_WIDTH = 150;
+
+        static public final int CANVAS_HEIGHT_SCALED = 28;
+
+        public final static int CANVAS_WIDTH_SCALED = 28;
+
+        static public final double ERROR = 0.05;
+
+        static public final String SOURCE = "src/main/resources/learningDataParsed.csv";
+    }
 }
