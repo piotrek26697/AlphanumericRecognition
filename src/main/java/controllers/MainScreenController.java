@@ -83,7 +83,7 @@ public class MainScreenController implements Initializable {
         List<List<Integer>> list = learner.getDataFromCSV(Main.Constants.SOURCE);
         list = trainingDataHandler.fitDataToResolution(list);
 
-//        for(int k =5000; k<6000; k++) {
+//        for(int k =0; k<2001; k++) {
 //            List<Integer> letterData = list.get(k);
 //            for (int i = 0; i < Main.Constants.CANVAS_HEIGHT_SCALED; i++) {
 //                for (int j = 0; j < Main.Constants.CANVAS_WIDTH_SCALED; j++) {
